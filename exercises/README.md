@@ -13,7 +13,7 @@ with constant demography, and B) shows the result of inference with the full dem
 
 Download the source code from GitHub
 ```
-git clone git@github.com:Schraiber/selection.git && cd selection
+git clone https://github.com/Schraiber/selection && cd selection
 ```
 
 Since the paper was released in 2016 there have been various updates to the code, so we will checkout an older version 
@@ -66,7 +66,7 @@ The input format for `sr` is a tab-delimited text file, with no header, and four
 3. The most recent end of the possible age of the sample (i.e. the youngest it could be)
 4. The most ancient end of the possible age of the sample (i.e. the oldest it could be)
 
-Create an input file for the *MC1R* data, using years BCE as the date format (dates should always be negative).
+Create an input file for the *MC1R* data, called `horse-MC1R.txt`, using years BCE as the date format (dates should always be negative).
 
 For example, the first two lines should look like this:
 ```
@@ -88,16 +88,16 @@ In the main text, Schraiber describes their other choice of parameters as:
 
 > We then ran the MCMC algorithm for 1,000,000 generations, sampling every 1000 generations to obtain 1000 MCMC samples for each simulation.
 
-Given these parameter choices, we can run the inference as such:
+Given these parameter choices, we can run the inference for the constant population model:
 ```
-./sr -D data/horse-MC1R.txt \
-     -P data/horse.all.pop \
+./sr -D horse-MC1R.txt \
+     -P constant.pop \
      -G 5 \
      -N 2500 \
      -n 1000000 \
      -s 1000 \
      -a \
-     -o horse-MC1R-horse-pop
+     -o horse-MC1R-const-pop
 ```
 
 Because the MCMC has to run for 1 million generations, this can take 5-10 minutes to run on a reasonably fast CPU.
@@ -126,7 +126,7 @@ Then load the data and calculate the ESS
 library(coda)
 
 # load the model parameters
-param <- read.delim("exercises/horse-MC1R.param")
+param <- read.delim("horse-MC1R-const-pop.param")
 
 # discard the first 500 observations as a burn-in
 param.burn <- param[-c(1:500),]
@@ -143,15 +143,14 @@ In the source code for `sr` there is a helper script `path_utilities.r` which co
 make Figure 6 from the main text.
 
 ```R
-
 # load the helper script
-source("../selection/path_utilities.r")
+source("path_utilities.r")
 
-# load the MCMC output
-paths <- read.path("exercises/horse-MC1R")
+# load the MCMC output (the can take a little while)
+paths <- read.path("horse-MC1R-const-pop")
 
 # load the sample data
-samples <- read.delim("exercises/data/horse-MC1R.txt", header=FALSE, col.names = c('derived_count', 'sample_size', 'age_youngest', 'age_oldest'))
+samples <- read.delim("horse-MC1R.txt", header=FALSE, col.names = c('derived_count', 'sample_size', 'age_youngest', 'age_oldest'))
 
 # convert the counts into frequencies
 sam_freqs <- samples$derived_count / samples$sample_size
@@ -162,7 +161,46 @@ gen_time = 5
 # convert the mid-point age into diffusion units
 sam_times <- rowMeans(samples[c('age_youngest', 'age_oldest')]) / (2*nref*gen_time)
 
-# plot the trajectory
+# plot the trajectory to a PDF file
+pdf(file = "horse-MC1R-const-pop-traj.pdf", width=8, height=5)
 plot.posterior.paths(paths, sam_freqs, sam_times, burnin = 500, xlim=c(min(sam_times), 0))
-
+dev.off()
 ```
+
+If you don't have X11 forwarding enabled in your SSH session, you can view the figure by copying it to your local machine 
+with `scp`.
+
+Does your trajectory look the same as Figure 6A from the paper? Does it look the same as other students' in the class? 
+If not, why might this be?
+
+## Plotting the posterior estimates
+
+In addition to the trajectory itself, `sr` infers the `age` of the allele, the heterozygote fitness `alpha1` , and 
+the homozygote fitness `alpha2`.
+
+```R
+# convert `alpha` into `s` (where alpha = 2*Ne*s)
+s1 <- param.burn$alpha1 / (2*nref)
+s2 <- param.burn$alpha2 / (2*nref)
+
+# plot the posteriors for s1 and s2
+pdf(file = "horse-MC1R-const-pop-s1.pdf", width=8, height=5)
+plot(density(s1))
+dev.off()
+
+pdf(file = "horse-MC1R-const-pop-s2.pdf", width=8, height=5)
+plot(density(s2))
+dev.off()
+
+# convert diffusion units into calendar years
+age <- param.burn$age * (2*nref*gen_time)
+
+# plot the posterior for the age of the allele
+pdf(file = "horse-MC1R-const-pop-age.pdf", width=8, height=5)
+plot(density(age))
+dev.off()
+```
+
+How does the inferred age of the *MC1R* allele compare with archaeological evidence for the earliest horse management
+and directed breeding?
+
