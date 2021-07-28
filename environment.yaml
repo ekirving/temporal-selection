@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - r
+  - defaults
+dependencies:
+  - r-base=3.6.3
+  - r-coda=0.19_4
+  - r-daag=1.22.1
+  - r-expm=0.999_5

@@ -1,2 +1,8 @@
-# temporal-selection
-Temporal selection exercises for PopGen21
+# Temporal Selection
+## Detecting selection with ancient DNA time-series
+Notes and exercises for the PopGen21 workshop.
+
+
+
+
+
