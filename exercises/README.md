@@ -113,7 +113,8 @@ If you get the following error, please ensure that you have created the file `ho
 ERROR: Final time point is not infinity OR final epoch not constant
 ```
 
-Because the MCMC has to run for 1 million generations, this can take 5-10 minutes to run on a reasonably fast CPU.
+Because the MCMC has to run for 1 million generations, this can take 10-15 minutes to run on a reasonably fast CPU. Now
+would be a great time to get a cup of coffee or tea.
 
 For a full list of the available flags, see the [README](https://github.com/Schraiber/selection/tree/change_time_parameters) file.
 
@@ -121,8 +122,9 @@ For a full list of the available flags, see the [README](https://github.com/Schr
 
 When running an MCMC analysis, there is a possibility that the chain has not mixed effectively and that not all parameters
 of interest have been well sampled from. One method for testing this is to calculate the Effective Sample Size (ESS) of each
-parameter inferred by the MCMC. In their paper, Schraiber *et al.* use a minimum ESS of 150 as a cut-off for their simulations, but do not describe what
-value they used for the empirical data.
+parameter inferred by the MCMC. In their paper, Schraiber *et al.* use a minimum ESS of 150 for the age of the allele as 
+a cut-off for assessing the quality of their simulations, but they do not describe what cut-off  (if any) they used for 
+the empirical data.
 
 > After discarding the first 500 samples from each MCMC run as burn-in, we computed the effective sample size of the 
 > allele age estimate, using the R package coda [(Plummer et al. 2006)](https://cran.r-project.org/package=coda).
@@ -135,18 +137,21 @@ Firstly, open an `R` session:
 R
 ```
 
-Load some `R` package dependencies (and install them if necessary)
+Load some `R` package dependencies (and install them if necessary). You may be asked to create a 'personal library' to 
+install these packages into, if so, answer 'yes' at the prompt.
 ```R
 if(!require(coda)){
     install.packages("coda")
     library(coda)
 }
-
+```
+```R
 if(!require(DAAG)){
     install.packages("DAAG")
     library(DAAG)
 }
-
+```
+```R
 if(!require(expm)){
     install.packages("expm")
     library(expm)
@@ -176,7 +181,7 @@ make Figure 6 from the main text.
 # load the helper script
 source("path_utilities.r")
 
-# load the MCMC output (the can take a little while)
+# load the MCMC output (this can take a little while)
 paths <- read.path("horse-MC1R-const-pop")
 
 # load the sample data
@@ -185,8 +190,8 @@ samples <- read.delim("horse-MC1R.txt", header=FALSE, col.names = c('derived_cou
 # convert the counts into frequencies
 sam_freqs <- samples$derived_count / samples$sample_size
 
-nref = 2500
-gen_time = 5
+nref <- 2500
+gen_time <- 5
 
 # convert the mid-point age into diffusion units
 sam_times <- rowMeans(samples[c('age_youngest', 'age_oldest')]) / (2*nref*gen_time)
@@ -260,9 +265,10 @@ scp <username>@ricco.popgen.dk:~/selection/*.pdf ./
 
 ## Optional Extra
 
-Trying repeating these steps for the model with the complex demography (`-P horse.all.pop`).
+Trying repeating these steps for the model with the complex demography (`-P horse.all.pop`). Don't forget to give the
+output a different name (e.g., `-o horse-MC1R-all-pop`).
 
 What effect did this have on the ESS for the inferred params? How might we improve on this?
 
-How do the posterior densities of the age of the allele and the selection coefficients differ from the constant population
+How do the posterior densities of the age of the allele, and the selection coefficients, differ from the constant population
 model?
