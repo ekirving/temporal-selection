@@ -134,10 +134,27 @@ Firstly, open an `R` session:
 ```
 R
 ```
+
+Load some `R` package dependencies (and install them if necessary)
+```R
+if(!require(coda)){
+    install.packages("coda")
+    library(coda)
+}
+
+if(!require(DAAG)){
+    install.packages("DAAG")
+    library(DAAG)
+}
+
+if(!require(expm)){
+    install.packages("expm")
+    library(expm)
+}
+```
+
 Then load the data and calculate the ESS
 ```R
-library(coda)
-
 # load the model parameters
 param <- read.delim("horse-MC1R-const-pop.param")
 
