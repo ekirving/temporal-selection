@@ -25,7 +25,7 @@ git checkout change_time_parameters
 
 Then compile the software for the current environment
 ```
-g++ -O3 -lgsl *.cpp -o sr
+g++ -O3 *.cpp -lgsl -lgslcblas -lm -o sr
 ```
 
 If you encounter any compilation errors, the [README](https://github.com/Schraiber/selection/tree/change_time_parameters) file has some additional 
@@ -74,6 +74,12 @@ For example, the first two lines should look like this:
 0	22	-13100	-13100
 ```
 
+The easiest way to manually create this file is to use the `nano` text editor. Alternatively, you can download my copy of the file:
+
+```
+wget https://raw.githubusercontent.com/ekirving/temporal-selection/main/exercises/data/horse-MC1R.txt
+```
+
 ## Running the model
 
 To infer selection on the *MC1R* data, we can use either the constant population demographic model (`-P constant.pop`) 
@@ -98,6 +104,11 @@ Given these parameter choices, we can run the inference for the constant populat
      -s 1000 \
      -a \
      -o horse-MC1R-const-pop
+```
+
+If you get the following error, please ensure that you have created the file `horse-MC1R.txt` and that it is formatted correctly.
+```
+ERROR: Final time point is not infinity OR final epoch not constant
 ```
 
 Because the MCMC has to run for 1 million generations, this can take 5-10 minutes to run on a reasonably fast CPU.
@@ -204,3 +215,11 @@ dev.off()
 How does the inferred age of the *MC1R* allele compare with archaeological evidence for the earliest horse management
 and directed breeding?
 
+## Optional Extra
+
+Trying repeating these steps for the model with the complex demography (`-P horse.all.pop`).
+
+What effect did this have on the ESS for the inferred params? How might we improve on this?
+
+How do the posterior densities of the age of the allele and the selection coefficients differ from the constant population
+model?
