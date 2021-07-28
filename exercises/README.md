@@ -165,7 +165,7 @@ param.burn <- param[-c(1:500),]
 effectiveSize(param.burn[c("lnL", "pathlnL", "alpha1", "alpha2", "age")])
 ```
 
-Did all of your parameters pass the ESS > 150 threshold? If not, what steps can we take to improve the ESS?
+Did all (or any) of your parameters pass the ESS > 150 threshold? If not, what steps can we take to improve the ESS?
 
 ## Plotting the inferred trajectory
 
@@ -191,14 +191,14 @@ gen_time = 5
 # convert the mid-point age into diffusion units
 sam_times <- rowMeans(samples[c('age_youngest', 'age_oldest')]) / (2*nref*gen_time)
 
-# plot the trajectory to a PDF file
+# if you have X11 forwarding enabled in your SSH session, you can view the figure directly
+plot.posterior.paths(paths, sam_freqs, sam_times, burnin = 500, xlim=c(min(sam_times), 0))
+
+# otherwise you can save the trajectory to a PDF file and view it later (see instructions at end)
 pdf(file = "horse-MC1R-const-pop-traj.pdf", width=8, height=5)
 plot.posterior.paths(paths, sam_freqs, sam_times, burnin = 500, xlim=c(min(sam_times), 0))
 dev.off()
 ```
-
-If you don't have X11 forwarding enabled in your SSH session, you can view the figure by copying it to your local machine 
-with `scp`.
 
 Does your trajectory look the same as Figure 6A from the paper? Does it look the same as other students' in the class? 
 If not, why might this be?
@@ -214,6 +214,10 @@ s1 <- param.burn$alpha1 / (2*nref)
 s2 <- param.burn$alpha2 / (2*nref)
 
 # plot the posteriors for s1 and s2
+plot(density(s1))
+plot(density(s2))
+
+# or save them to PDF files for viewing later
 pdf(file = "horse-MC1R-const-pop-s1.pdf", width=8, height=5)
 plot(density(s1))
 dev.off()
@@ -222,17 +226,37 @@ pdf(file = "horse-MC1R-const-pop-s2.pdf", width=8, height=5)
 plot(density(s2))
 dev.off()
 
-# convert diffusion units into calendar years
+# convert the age of the allele from diffusion units into calendar years
 age <- param.burn$age * (2*nref*gen_time)
 
 # plot the posterior for the age of the allele
+plot(density(age))
+
+# or save it to PDF for viewing later
 pdf(file = "horse-MC1R-const-pop-age.pdf", width=8, height=5)
 plot(density(age))
 dev.off()
 ```
 
-How does the inferred age of the *MC1R* allele compare with archaeological evidence for the earliest horse management
-and directed breeding?
+To exit your `R` session and return to the command line type `Ctrl+D` or:
+```R
+quit()
+```
+
+The earliest archaeological evidence for horse management suggests that the domestication process began around 5,500 
+years ago in Central Asia ([Outram et al. 2009](https://doi.org/10.1126/science.1168594); [Gaunitz et al., 2018](https://doi.org/10.1126/science.aao3297)).
+
+How does this compare to your estimates for the age of the *MC1R* allele? What could be an explanation for this?
+
+## Viewing plots offline
+
+If you were unable to view your `R` plots interactively, or want to keep a copy of the PDFs you created, you can download 
+all the plots to your local machine using `scp`.
+
+NOTE: This should be run on your local machine, not on the server:
+```
+scp <username>@ricco.popgen.dk:~/selection/*.pdf ./
+```
 
 ## Optional Extra
 
