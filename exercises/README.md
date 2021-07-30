@@ -116,7 +116,13 @@ ERROR: Final time point is not infinity OR final epoch not constant
 Because the MCMC has to run for 1 million generations, this can take 10-15 minutes to run on a reasonably fast CPU. Now
 would be a great time to get a cup of coffee or tea.
 
-For a full list of the available flags, see the [README](https://github.com/Schraiber/selection/tree/change_time_parameters) file.
+If you get impatient waiting for the results, you can copy the outputs from an earlier run of the software here:
+
+```bash
+cp /ricco/data/evan/selection/horse-MC1R-const-pop.* ./
+```
+
+For a full list of the available flags for `sr`, see the [README](https://github.com/Schraiber/selection/tree/change_time_parameters) file.
 
 ## Checking model diagnostics
 
